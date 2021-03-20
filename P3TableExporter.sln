@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31025.218
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P3TableExporter", "P3TableExporter.csproj", "{5A5F3BD5-0C17-4835-94EC-400308304D89}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5A5F3BD5-0C17-4835-94EC-400308304D89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A5F3BD5-0C17-4835-94EC-400308304D89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A5F3BD5-0C17-4835-94EC-400308304D89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A5F3BD5-0C17-4835-94EC-400308304D89}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DFC1AF6C-6DAC-499E-8B5A-7CCB1B39DE92}
+	EndGlobalSection
+EndGlobal
