@@ -48,6 +48,8 @@ namespace P3TableExporter
             {
                 Segments.Add(new PersonaStatsArray(reader));
                 Utils.ReadPadding(reader, 16);
+                Segments.Add(new PersonaGrowthAndSkillsArray(reader));
+                Utils.ReadPadding(reader, 16);
             }
             else if (tableName == "MSG")
             {

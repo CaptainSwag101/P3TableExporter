@@ -145,20 +145,19 @@ namespace P3TableExporter.TableSegments
         }
     }
 
-    [StructLayout(LayoutKind.Explicit, Size=14, CharSet=CharSet.Ansi)]
     struct PersonaStats
     {
-        [FieldOffset(0)] public ushort Type;
-        [FieldOffset(2)] public byte Arcana;
-        [FieldOffset(3)] public byte BaseLevel;
-        [FieldOffset(4)] public byte Strength;
-        [FieldOffset(5)] public byte Magic;
-        [FieldOffset(6)] public byte Endurance;
-        [FieldOffset(7)] public byte Agility;
-        [FieldOffset(8)] public byte Luck;
-        [FieldOffset(9)] public byte Unknown1;
-        [FieldOffset(10)] public byte Inheritance;
-        [FieldOffset(11)] public ushort Unknown2;
-        [FieldOffset(13)] public byte Unknown3;
+        public ushort Type;
+        public byte Arcana;
+        public byte BaseLevel;
+        public byte Strength;
+        public byte Magic;
+        public byte Endurance;
+        public byte Agility;
+        public byte Luck;
+        public byte Unknown1;
+        public byte Inheritance;
+        public ushort Unknown2;
+        public byte Unknown3;
     }
 }
