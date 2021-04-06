@@ -133,6 +133,11 @@ namespace P3TableExporter
 
             _ = 0;  // Breakpoint spot
 
+            // If the data we're writing to the file is shorter than the existing data,
+            // it could result in undesirable leftover garbage, so we outright delete the
+            // file first to ensure that we start with a clean slate.
+            OutputTextInfo.Delete();   
+            
             // Output each segment of the input table
             using FileStream outputStream = OutputTextInfo.OpenWrite();
             using StreamWriter outputWriter = new(outputStream);
@@ -160,6 +165,10 @@ namespace P3TableExporter
             }
 
             _ = 0;  // Breakpoint spot
+
+            // Append credits/tagline
+            outputBuilder.Append("Data exported by P3TableExporter by CaptainSwag101\n");
+            outputBuilder.Append($"Last modified: {DateTime.Today.ToShortDateString()}");
 
             // When our output is totally built, write it to the output CSV file.
             outputWriter.Write(outputBuilder.ToString());
