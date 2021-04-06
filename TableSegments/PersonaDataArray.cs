@@ -30,7 +30,7 @@ namespace P3TableExporter.TableSegments
         public PersonaData[] DataArray;
         public const int STRUCT_SIZE = 14;
 
-        private string[] InheritanceStrings =
+        private readonly string[] InheritanceStrings =
         {
             "None",
             "Fire",
@@ -71,8 +71,8 @@ namespace P3TableExporter.TableSegments
                 DataArray[i].Stats.Luck = reader.ReadByte();
                 DataArray[i].Unknown1 = reader.ReadByte();
                 DataArray[i].Inheritance = reader.ReadByte();
-                DataArray[i].Unknown2 = reader.ReadUInt16();
-                DataArray[i].Unknown3 = reader.ReadByte();
+                DataArray[i].Flags = reader.ReadUInt16();
+                DataArray[i].Unknown2 = reader.ReadByte();
             }
         }
 
@@ -96,8 +96,8 @@ namespace P3TableExporter.TableSegments
                     8 => "Luck",
                     9 => "Unknown1",
                     10 => "Inheritance",
-                    11 => "Unknown2",
-                    12 => "Unknown3",
+                    11 => "Special Flags",
+                    12 => "Unknown2",
                     _ => "ERROR"
                 };
                 rowStrings.Add(colName);
@@ -160,8 +160,16 @@ namespace P3TableExporter.TableSegments
                 else
                     rowStrings.Add(DataArray[i].Inheritance.ToString());
 
+                if (DataArray[i].Flags == 9984)
+                    rowStrings.Add("Can Give Heart Item");
+                else if (DataArray[i].Flags == 12800)
+                    rowStrings.Add("Party Members Only");
+                else if (DataArray[i].Flags == 0)
+                    rowStrings.Add("None");
+                else
+                    rowStrings.Add(DataArray[i].Flags.ToString());
+
                 rowStrings.Add(DataArray[i].Unknown2.ToString());
-                rowStrings.Add(DataArray[i].Unknown3.ToString());
 
                 outputBuilder.AppendJoin(',', rowStrings);
                 outputBuilder.Append('\n');
@@ -179,7 +187,7 @@ namespace P3TableExporter.TableSegments
         public StatValues Stats;
         public byte Unknown1;
         public byte Inheritance;
-        public ushort Unknown2;
-        public byte Unknown3;
+        public ushort Flags;
+        public byte Unknown2;
     }
 }

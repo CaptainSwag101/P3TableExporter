@@ -167,7 +167,7 @@ namespace P3TableExporter
             _ = 0;  // Breakpoint spot
 
             // Append credits/tagline
-            outputBuilder.Append("Data exported by P3TableExporter by CaptainSwag101\n");
+            outputBuilder.Append("Data exported with P3TableExporter by CaptainSwag101\n");
             outputBuilder.Append($"Last modified: {DateTime.Today.ToShortDateString()}");
 
             // When our output is totally built, write it to the output CSV file.
