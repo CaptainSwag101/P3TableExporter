@@ -80,6 +80,7 @@ namespace P3TableExporter.TableSegments
         {
             StringBuilder outputBuilder = new();
 
+            // First row is column names
             List<string> rowStrings = new();
             for (int col = 0; col < 13; ++col)
             {
@@ -131,6 +132,7 @@ namespace P3TableExporter.TableSegments
                 }
             }
 
+            // Remaining rows are data
             for (int i = 0; i < DataArray.Length; ++i)
             {
                 rowStrings.Clear();

@@ -51,6 +51,11 @@ namespace P3TableExporter
                 Segments.Add(new PersonaGrowthAndSkillsArray(reader));
                 Utils.ReadPadding(reader, 16);
             }
+            else if (tableName == "ENCOUNT")
+            {
+                Segments.Add(new EnemyEncounters(reader));
+                Utils.ReadPadding(reader, 16);
+            }
             else if (tableName == "MSG")
             {
                 Segments.Add(new ArcanaNames(reader));
