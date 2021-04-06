@@ -1,4 +1,22 @@
-﻿using System;
+﻿/*
+    Persona 3 Table Exporter, a tool for exporting data tables from Persona 3 for analysis.
+    Copyright (C) 2021  James Pelster "CaptainSwag101"
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,11 +39,11 @@ namespace P3TableExporter.TableSegments
             for (uint i = 0; i < structCount; ++i)
             {
                 // Read weighted stat growth
-                DataArray[i].StrengthGrowthRate = reader.ReadByte();
-                DataArray[i].MagicGrowthRate = reader.ReadByte();
-                DataArray[i].EnduranceGrowthRate = reader.ReadByte();
-                DataArray[i].AgilityGrowthRate = reader.ReadByte();
-                DataArray[i].LuckGrowthRate = reader.ReadByte();
+                DataArray[i].StatGrowthWeights.Strength = reader.ReadByte();
+                DataArray[i].StatGrowthWeights.Magic = reader.ReadByte();
+                DataArray[i].StatGrowthWeights.Endurance = reader.ReadByte();
+                DataArray[i].StatGrowthWeights.Agility = reader.ReadByte();
+                DataArray[i].StatGrowthWeights.Luck = reader.ReadByte();
 
                 // Read unknown byte (should be padding)
                 byte unknown = reader.ReadByte();
@@ -99,11 +117,11 @@ namespace P3TableExporter.TableSegments
                 rowStrings.Clear();
 
                 // Write weighted stat growth values
-                rowStrings.Add((growthAndSkills.StrengthGrowthRate + 10).ToString() + '%');
-                rowStrings.Add((growthAndSkills.MagicGrowthRate + 10).ToString() + '%');
-                rowStrings.Add((growthAndSkills.EnduranceGrowthRate + 10).ToString() + '%');
-                rowStrings.Add((growthAndSkills.AgilityGrowthRate + 10).ToString() + '%');
-                rowStrings.Add((growthAndSkills.LuckGrowthRate + 10).ToString() + '%');
+                rowStrings.Add((growthAndSkills.StatGrowthWeights.Strength + 10).ToString() + '%');
+                rowStrings.Add((growthAndSkills.StatGrowthWeights.Magic + 10).ToString() + '%');
+                rowStrings.Add((growthAndSkills.StatGrowthWeights.Endurance + 10).ToString() + '%');
+                rowStrings.Add((growthAndSkills.StatGrowthWeights.Agility + 10).ToString() + '%');
+                rowStrings.Add((growthAndSkills.StatGrowthWeights.Luck + 10).ToString() + '%');
 
                 // Write skills
                 foreach (var skill in growthAndSkills.Skills)
@@ -136,11 +154,7 @@ namespace P3TableExporter.TableSegments
 
     struct PersonaGrowthAndSkills
     {
-        public byte StrengthGrowthRate;
-        public byte MagicGrowthRate;
-        public byte EnduranceGrowthRate;
-        public byte AgilityGrowthRate;
-        public byte LuckGrowthRate;
+        public StatValues StatGrowthWeights;
         public PersonaSkill[] Skills;
     }
 

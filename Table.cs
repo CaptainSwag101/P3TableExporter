@@ -46,7 +46,7 @@ namespace P3TableExporter
             string tableName = info.Name.ToUpperInvariant().Split(".")[0];
             if (tableName == "PERSONA" || tableName == "PERSONA_F")
             {
-                Segments.Add(new PersonaStatsArray(reader));
+                Segments.Add(new PersonaDataArray(reader));
                 Utils.ReadPadding(reader, 16);
                 Segments.Add(new PersonaGrowthAndSkillsArray(reader));
                 Utils.ReadPadding(reader, 16);
