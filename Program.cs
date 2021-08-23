@@ -21,9 +21,22 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using PowerArgs;
 
 namespace P3TableExporter
 {
+    class LaunchArgs
+    {
+        [ArgRequired, ArgPosition(0)]
+        public string InputTablePath { get; set; }
+        
+        [ArgPosition(1), ArgRegex(@"^(.+)\.[Tt][Bb][Ll]$")]
+        public string MsgTblPath { get; set; }
+
+        [ArgPosition(2), ArgRegex(@"^(.+)\.[Cc][Ss][Vv]$")]
+        public string OutputTextPath { get; set; }
+    }
+
     class Program
     {
         static void PrintUsage(string? additionalInfo = null)
@@ -52,6 +65,18 @@ namespace P3TableExporter
             {
                 PrintUsage("Error: Too many input arguments provided! (max. 3)");
                 return;
+            }
+
+            // Validate input args: process via PowerArgs
+            try
+            {
+                var parsed = Args.Parse<LaunchArgs>(args);
+
+                InputTableInfo = new(parsed.InputTablePath);
+            }
+            catch (ArgException ex)
+            {
+                throw;
             }
 
             // Validate input args: First arg (always input TBL)

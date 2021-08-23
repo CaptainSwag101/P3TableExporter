@@ -27,7 +27,7 @@ namespace P3TableExporter.TableSegments
 {
     class EnemyEncounters : TableSegment
     {
-        public EncounterData[] DataArray;
+        public EncounterData[] Data;
         public const int STRUCT_SIZE = 18 + (2 * 5);
 
         private readonly string[] MusicStrings =
@@ -45,24 +45,24 @@ namespace P3TableExporter.TableSegments
         {
             int segmentSize = reader.ReadInt32();
             int structCount = (segmentSize / STRUCT_SIZE);
-            DataArray = new EncounterData[structCount];
+            Data = new EncounterData[structCount];
 
             for (uint i = 0; i < structCount; ++i)
             {
-                DataArray[i] = new();
-                DataArray[i].Flags = reader.ReadUInt32();
-                DataArray[i].Unknown1 = reader.ReadUInt16();
-                DataArray[i].Unknown2 = reader.ReadUInt16();
-                DataArray[i].Units = new ushort[5];
+                Data[i] = new();
+                Data[i].Flags = reader.ReadUInt32();
+                Data[i].Unknown1 = reader.ReadUInt16();
+                Data[i].Unknown2 = reader.ReadUInt16();
+                Data[i].Units = new ushort[5];
                 for (int j = 0; j < 5; ++j)
                 {
-                    DataArray[i].Units[j] = reader.ReadUInt16();
+                    Data[i].Units[j] = reader.ReadUInt16();
                 }
-                DataArray[i].FieldID = reader.ReadUInt16();
-                DataArray[i].RoomID = reader.ReadUInt16();
-                DataArray[i].MusicID = reader.ReadUInt16();
-                DataArray[i].Unknown3 = reader.ReadUInt16();
-                DataArray[i].Unknown4 = reader.ReadUInt16();
+                Data[i].FieldID = reader.ReadUInt16();
+                Data[i].RoomID = reader.ReadUInt16();
+                Data[i].MusicID = reader.ReadUInt16();
+                Data[i].Unknown3 = reader.ReadUInt16();
+                Data[i].Unknown4 = reader.ReadUInt16();
             }
         }
 
@@ -110,30 +110,30 @@ namespace P3TableExporter.TableSegments
             }
 
             // Remaining rows are data
-            for (int i = 0; i < DataArray.Length; ++i)
+            for (int i = 0; i < Data.Length; ++i)
             {
                 rowStrings.Clear();
 
-                rowStrings.Add(DataArray[i].Flags.ToString());
-                rowStrings.Add(DataArray[i].Unknown1.ToString());
-                rowStrings.Add(DataArray[i].Unknown2.ToString());
-                foreach (var unit in DataArray[i].Units)
+                rowStrings.Add(Data[i].Flags.ToString());
+                rowStrings.Add(Data[i].Unknown1.ToString());
+                rowStrings.Add(Data[i].Unknown2.ToString());
+                foreach (var unit in Data[i].Units)
                 {
                     if (enemyNames != null)
                         rowStrings.Add(enemyNames[unit]);
                     else
                         rowStrings.Add(unit.ToString());
                 }
-                rowStrings.Add(DataArray[i].FieldID.ToString());
-                rowStrings.Add(DataArray[i].RoomID.ToString());
+                rowStrings.Add(Data[i].FieldID.ToString());
+                rowStrings.Add(Data[i].RoomID.ToString());
 
-                if (DataArray[i].MusicID >= 0 && DataArray[i].MusicID < MusicStrings.Length)
-                    rowStrings.Add(MusicStrings[DataArray[i].MusicID]);
+                if (Data[i].MusicID >= 0 && Data[i].MusicID < MusicStrings.Length)
+                    rowStrings.Add(MusicStrings[Data[i].MusicID]);
                 else
-                    rowStrings.Add(DataArray[i].MusicID.ToString());
+                    rowStrings.Add(Data[i].MusicID.ToString());
 
-                rowStrings.Add(DataArray[i].Unknown3.ToString());
-                rowStrings.Add(DataArray[i].Unknown4.ToString());
+                rowStrings.Add(Data[i].Unknown3.ToString());
+                rowStrings.Add(Data[i].Unknown4.ToString());
 
                 outputBuilder.AppendJoin(',', rowStrings);
                 outputBuilder.Append('\n');

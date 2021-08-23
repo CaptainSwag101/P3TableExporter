@@ -27,23 +27,23 @@ namespace P3TableExporter.TableSegments
 {
     class PersonaGrowthAndSkillsArray : TableSegment
     {
-        public PersonaGrowthAndSkills[] DataArray;
+        public PersonaGrowthAndSkills[] Data;
         public const int STRUCT_SIZE = 6 + (4 * 16);
 
         public PersonaGrowthAndSkillsArray(BinaryReader reader)
         {
             int segmentSize = reader.ReadInt32();
             int structCount = (segmentSize / STRUCT_SIZE);
-            DataArray = new PersonaGrowthAndSkills[structCount];
+            Data = new PersonaGrowthAndSkills[structCount];
 
             for (uint i = 0; i < structCount; ++i)
             {
                 // Read weighted stat growth
-                DataArray[i].StatGrowthWeights.Strength = reader.ReadByte();
-                DataArray[i].StatGrowthWeights.Magic = reader.ReadByte();
-                DataArray[i].StatGrowthWeights.Endurance = reader.ReadByte();
-                DataArray[i].StatGrowthWeights.Agility = reader.ReadByte();
-                DataArray[i].StatGrowthWeights.Luck = reader.ReadByte();
+                Data[i].StatGrowthWeights.Strength = reader.ReadByte();
+                Data[i].StatGrowthWeights.Magic = reader.ReadByte();
+                Data[i].StatGrowthWeights.Endurance = reader.ReadByte();
+                Data[i].StatGrowthWeights.Agility = reader.ReadByte();
+                Data[i].StatGrowthWeights.Luck = reader.ReadByte();
 
                 // Read unknown byte (should be padding)
                 byte unknown = reader.ReadByte();
@@ -51,13 +51,13 @@ namespace P3TableExporter.TableSegments
                     throw new InvalidDataException("The padding byte was non-zero, this could indicate an alignment problem or a fundamental misunderstanding of the table segment data!");
 
                 // Read learnable skills
-                DataArray[i].Skills = new PersonaSkill[16];
+                Data[i].Skills = new PersonaSkill[16];
                 for (int j = 0; j < 16; ++j)
                 {
-                    DataArray[i].Skills[j] = new();
-                    DataArray[i].Skills[j].PendingLevels = reader.ReadByte();
-                    DataArray[i].Skills[j].Learnable = (reader.ReadByte() > 0);
-                    DataArray[i].Skills[j].SkillID = reader.ReadUInt16();
+                    Data[i].Skills[j] = new();
+                    Data[i].Skills[j].PendingLevels = reader.ReadByte();
+                    Data[i].Skills[j].Learnable = (reader.ReadByte() > 0);
+                    Data[i].Skills[j].SkillID = reader.ReadUInt16();
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace P3TableExporter.TableSegments
                 }
             }
 
-            foreach (var growthAndSkills in DataArray)
+            foreach (var growthAndSkills in Data)
             {
                 rowStrings.Clear();
 

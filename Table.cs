@@ -50,10 +50,20 @@ namespace P3TableExporter
                 Utils.ReadPadding(reader, 16);
                 Segments.Add(new PersonaGrowthAndSkillsArray(reader));
                 Utils.ReadPadding(reader, 16);
+                Segments.Add(new PartyMemberPersonas(reader));
+                Utils.ReadPadding(reader, 16);
             }
             else if (tableName == "ENCOUNT")
             {
                 Segments.Add(new EnemyEncounters(reader));
+                Utils.ReadPadding(reader, 16);
+                Segments.Add(new UnknownSegment(reader, 10));
+                Utils.ReadPadding(reader, 16);
+                Segments.Add(new UnknownSegment(reader, 10));
+                Utils.ReadPadding(reader, 16);
+                Segments.Add(new UnknownSegment(reader));
+                Utils.ReadPadding(reader, 16);
+                Segments.Add(new UnknownSegment(reader));
                 Utils.ReadPadding(reader, 16);
             }
             else if (tableName == "MSG")

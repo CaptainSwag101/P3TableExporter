@@ -27,7 +27,7 @@ namespace P3TableExporter.TableSegments
 {
     class PersonaDataArray : TableSegment
     {
-        public PersonaData[] DataArray;
+        public PersonaData[] Data;
         public const int STRUCT_SIZE = 14;
 
         private readonly string[] InheritanceStrings =
@@ -56,23 +56,23 @@ namespace P3TableExporter.TableSegments
         {
             int segmentSize = reader.ReadInt32();
             int structCount = (segmentSize / STRUCT_SIZE);
-            DataArray = new PersonaData[structCount];
+            Data = new PersonaData[structCount];
 
             for (uint i = 0; i < structCount; ++i)
             {
-                DataArray[i] = new();
-                DataArray[i].Type = reader.ReadUInt16();
-                DataArray[i].Arcana = reader.ReadByte();
-                DataArray[i].BaseLevel = reader.ReadByte();
-                DataArray[i].Stats.Strength = reader.ReadByte();
-                DataArray[i].Stats.Magic = reader.ReadByte();
-                DataArray[i].Stats.Endurance = reader.ReadByte();
-                DataArray[i].Stats.Agility = reader.ReadByte();
-                DataArray[i].Stats.Luck = reader.ReadByte();
-                DataArray[i].Unknown1 = reader.ReadByte();
-                DataArray[i].Inheritance = reader.ReadByte();
-                DataArray[i].Flags = reader.ReadUInt16();
-                DataArray[i].Unknown2 = reader.ReadByte();
+                Data[i] = new();
+                Data[i].Type = reader.ReadUInt16();
+                Data[i].Arcana = reader.ReadByte();
+                Data[i].BaseLevel = reader.ReadByte();
+                Data[i].Stats.Strength = reader.ReadByte();
+                Data[i].Stats.Magic = reader.ReadByte();
+                Data[i].Stats.Endurance = reader.ReadByte();
+                Data[i].Stats.Agility = reader.ReadByte();
+                Data[i].Stats.Luck = reader.ReadByte();
+                Data[i].Unknown1 = reader.ReadByte();
+                Data[i].Inheritance = reader.ReadByte();
+                Data[i].Flags = reader.ReadUInt16();
+                Data[i].Unknown2 = reader.ReadByte();
             }
         }
 
@@ -133,7 +133,7 @@ namespace P3TableExporter.TableSegments
             }
 
             // Remaining rows are data
-            for (int i = 0; i < DataArray.Length; ++i)
+            for (int i = 0; i < Data.Length; ++i)
             {
                 rowStrings.Clear();
 
@@ -142,36 +142,36 @@ namespace P3TableExporter.TableSegments
                 else
                     rowStrings.Add(i.ToString());
 
-                rowStrings.Add(DataArray[i].Type.ToString());
+                rowStrings.Add(Data[i].Type.ToString());
 
                 if (arcanaNames != null)
-                    rowStrings.Add(arcanaNames[DataArray[i].Arcana]);
+                    rowStrings.Add(arcanaNames[Data[i].Arcana]);
                 else
-                    rowStrings.Add(DataArray[i].Arcana.ToString());
+                    rowStrings.Add(Data[i].Arcana.ToString());
 
-                rowStrings.Add(DataArray[i].BaseLevel.ToString());
-                rowStrings.Add(DataArray[i].Stats.Strength.ToString());
-                rowStrings.Add(DataArray[i].Stats.Magic.ToString());
-                rowStrings.Add(DataArray[i].Stats.Endurance.ToString());
-                rowStrings.Add(DataArray[i].Stats.Agility.ToString());
-                rowStrings.Add(DataArray[i].Stats.Luck.ToString());
-                rowStrings.Add(DataArray[i].Unknown1.ToString());
+                rowStrings.Add(Data[i].BaseLevel.ToString());
+                rowStrings.Add(Data[i].Stats.Strength.ToString());
+                rowStrings.Add(Data[i].Stats.Magic.ToString());
+                rowStrings.Add(Data[i].Stats.Endurance.ToString());
+                rowStrings.Add(Data[i].Stats.Agility.ToString());
+                rowStrings.Add(Data[i].Stats.Luck.ToString());
+                rowStrings.Add(Data[i].Unknown1.ToString());
 
-                if (DataArray[i].Inheritance >= 0 && DataArray[i].Inheritance < InheritanceStrings.Length)
-                    rowStrings.Add(InheritanceStrings[DataArray[i].Inheritance]);
+                if (Data[i].Inheritance >= 0 && Data[i].Inheritance < InheritanceStrings.Length)
+                    rowStrings.Add(InheritanceStrings[Data[i].Inheritance]);
                 else
-                    rowStrings.Add(DataArray[i].Inheritance.ToString());
+                    rowStrings.Add(Data[i].Inheritance.ToString());
 
-                if (DataArray[i].Flags == 9984)
+                if (Data[i].Flags == 9984)
                     rowStrings.Add("Can Give Heart Item");
-                else if (DataArray[i].Flags == 12800)
+                else if (Data[i].Flags == 12800)
                     rowStrings.Add("Party Members Only");
-                else if (DataArray[i].Flags == 0)
+                else if (Data[i].Flags == 0)
                     rowStrings.Add("None");
                 else
-                    rowStrings.Add(DataArray[i].Flags.ToString());
+                    rowStrings.Add(Data[i].Flags.ToString());
 
-                rowStrings.Add(DataArray[i].Unknown2.ToString());
+                rowStrings.Add(Data[i].Unknown2.ToString());
 
                 outputBuilder.AppendJoin(',', rowStrings);
                 outputBuilder.Append('\n');
