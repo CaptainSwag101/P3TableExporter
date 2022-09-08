@@ -29,6 +29,7 @@ namespace P3TableExporter.TableSegments
     {
         public PersonaGrowthAndSkills[] Data;
         public const int STRUCT_SIZE = 6 + (4 * 16);
+        public int MostLearnableSkills = 0;
 
         public PersonaGrowthAndSkillsArray(BinaryReader reader)
         {
@@ -50,7 +51,9 @@ namespace P3TableExporter.TableSegments
                 if (unknown != 0)
                     throw new InvalidDataException("The padding byte was non-zero, this could indicate an alignment problem or a fundamental misunderstanding of the table segment data!");
 
-                // Read learnable skills
+                // Read learnable skills. Also figure out the maximum number of
+                // learnable skills by any Persona, so we don't need to
+                // go all the way to 21 columns if we don't need to.
                 Data[i].Skills = new PersonaSkill[16];
                 for (int j = 0; j < 16; ++j)
                 {
@@ -58,7 +61,12 @@ namespace P3TableExporter.TableSegments
                     Data[i].Skills[j].PendingLevels = reader.ReadByte();
                     Data[i].Skills[j].Learnable = (reader.ReadByte() > 0);
                     Data[i].Skills[j].SkillID = reader.ReadUInt16();
+
+                    if (Data[i].Skills[j].Learnable && Data[i].Skills[j].SkillID != 0)
+                        if (j > MostLearnableSkills)
+                            MostLearnableSkills = j;
                 }
+
             }
         }
 
@@ -67,7 +75,7 @@ namespace P3TableExporter.TableSegments
             StringBuilder outputBuilder = new();
 
             List<string> rowStrings = new();
-            for (int col = 0; col < 21; ++col)
+            for (int col = 0; col < 5 + MostLearnableSkills; ++col)
             {
                 string colName = col switch
                 {
@@ -96,6 +104,7 @@ namespace P3TableExporter.TableSegments
                 };
                 rowStrings.Add(colName);
             }
+            rowStrings.Add("Last skill @ base lvl +");
             outputBuilder.AppendJoin(',', rowStrings);
             outputBuilder.Append('\n');
 
@@ -124,25 +133,29 @@ namespace P3TableExporter.TableSegments
                 rowStrings.Add((growthAndSkills.StatGrowthWeights.Luck + 10).ToString() + '%');
 
                 // Write skills
-                foreach (var skill in growthAndSkills.Skills)
+                int highestLevelSkill = 0;
+                for (int skillNum = 0; skillNum < MostLearnableSkills; ++skillNum)
                 {
+                    var skill = growthAndSkills.Skills[skillNum];
+
                     string skillText = "";
-
-                    if (!skill.Learnable || skill.SkillID == 0)
+                    if (skill.Learnable && skill.SkillID != 0)
                     {
-                        break;
-                        //skillText += "(Unlearnable) ";
+                        if (skillNames != null)
+                            skillText += skillNames[skill.SkillID];
+                        else
+                            skillText += skill.SkillID.ToString();
+
+                        skillText += $" (base level + {skill.PendingLevels})";
+
+                        if (skill.PendingLevels > highestLevelSkill)
+                            highestLevelSkill = skill.PendingLevels;
                     }
-
-                    if (skillNames != null)
-                        skillText += skillNames[skill.SkillID];
-                    else
-                        skillText += skill.SkillID.ToString();
-
-                    skillText += $" (base level + {skill.PendingLevels})";
-
                     rowStrings.Add(skillText);
                 }
+
+                // Write highest level skill
+                rowStrings.Add($"{highestLevelSkill}");
 
                 outputBuilder.AppendJoin(',', rowStrings);
                 outputBuilder.Append('\n');
