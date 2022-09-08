@@ -22,27 +22,32 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using PowerArgs;
+using System.Linq;
+using System.Diagnostics;
 
 namespace P3TableExporter
 {
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     class LaunchArgs
     {
-        [ArgRequired, ArgPosition(0)]
+        [ArgRequired, ArgPosition(0), ArgRegex(@"^(.+)\.[Tt][Bb][Ll]$")]
         public string InputTablePath { get; set; }
-        
+
         [ArgPosition(1), ArgRegex(@"^(.+)\.[Tt][Bb][Ll]$")]
         public string MsgTblPath { get; set; }
 
         [ArgPosition(2), ArgRegex(@"^(.+)\.[Cc][Ss][Vv]$")]
         public string OutputTextPath { get; set; }
     }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     class Program
     {
         static void PrintUsage(string? additionalInfo = null)
         {
             const string usage =
-                "Persona 3 Table Exporter, Copyright (C) 2021  James Pelster \"CaptainSwag101\"\n" +
+                "Persona 3 Table Exporter, Copyright (C) 2021-2022  James Pelster \"CaptainSwag101\"\n" +
                 "Usage: P3TableExporter <input TBL file> [path to MSG.TBL] [output CSV file]";
 
             Console.WriteLine(usage);
@@ -51,9 +56,9 @@ namespace P3TableExporter
 
         static void Main(string[] args)
         {
-            FileInfo? InputTableInfo = null;
+            FileInfo InputTableInfo;
+            FileInfo? MsgTableInfo = null;
             FileInfo? OutputTextInfo = null;
-            FileInfo? MsgTblInfo = null;
 
             // Validate input args: Preliminary checks
             if (args.Length == 0)
@@ -70,74 +75,44 @@ namespace P3TableExporter
             // Validate input args: process via PowerArgs
             try
             {
-                var parsed = Args.Parse<LaunchArgs>(args);
+                LaunchArgs parsed = Args.Parse<LaunchArgs>(args);
 
                 InputTableInfo = new(parsed.InputTablePath);
+                if (parsed.MsgTblPath != null) MsgTableInfo = new(parsed.MsgTblPath);
+                if (parsed.OutputTextPath != null) OutputTextInfo = new(parsed.OutputTextPath);
             }
             catch (ArgException ex)
             {
                 throw;
             }
 
-            // Validate input args: First arg (always input TBL)
-            InputTableInfo = new(args[0]);
+            // Validate Input Table
             if (!InputTableInfo.Exists)
             {
                 PrintUsage("Error: Input table file does not exist!");
                 return;
             }
-            else if (InputTableInfo.Extension.ToUpperInvariant() != ".TBL")
-            {
-                PrintUsage("Error: Input table file does not have the .TBL extension! Are you sure it's valid?");
-                return;
-            }
             else if (InputTableInfo.Length > int.MaxValue)
             {
-                PrintUsage("Error: Input file has an absurdly large size (>2 GB)! This is absolutely invalid.");
+                PrintUsage("Error: Input table has an absurdly large size (>2 GB)! There's no way this can be correct, exiting...");
                 return;
             }
 
-            // Validate input args: Remaining arguments
-            for (int a = 1; a < args.Length; ++a)
+            // Validate Message Table
+            if (MsgTableInfo != null)
             {
-                string arg = args[a];
-                FileInfo argInfo = new(arg);
-
-                if (!argInfo.Exists)
+                if (!MsgTableInfo.Exists)
                 {
-                    PrintUsage($"Error: File {arg} does not exist!");
+                    PrintUsage("Error: MSG table file does not exist!");
                     return;
                 }
-
-                // We don't know what kind of file the current argument is because they're both optional,
-                // so determine which file this is based on the extension.
-                if (argInfo.Extension.ToUpperInvariant() == ".CSV")
+                else if (MsgTableInfo.Length > int.MaxValue)
                 {
-                    if (OutputTextInfo == null)
-                    {
-                        OutputTextInfo = argInfo;
-                    }
-                    else
-                    {
-                        PrintUsage("Error: An output CSV path was already provided!");
-                        return;
-                    }
-                }
-                else if (argInfo.Name.ToUpperInvariant() == "MSG.TBL")
-                {
-                    if (MsgTblInfo == null)
-                    {
-                        MsgTblInfo = argInfo;
-                    }
-                    else
-                    {
-                        PrintUsage("Error: Path to MSG.TBL was already provided!");
-                        return;
-                    }
+                    PrintUsage("Error: MSG table has an absurdly large size (>2 GB)! There's no way this can be correct, exiting...");
                 }
             }
 
-            // Validate input args: Output CSV path, if one wasn't specified
+            // Automatically create an Output CSV, if one wasn't specified explicitly
             if (OutputTextInfo == null)
             {
                 // Copy the input path but change the extension to "csv"
@@ -153,15 +128,31 @@ namespace P3TableExporter
 
             // If MSG.TBL is defined, load it too!
             Table? MessageTable = null;
-            if (MsgTblInfo != null)
-                MessageTable = new(MsgTblInfo);
+            if (MsgTableInfo != null)
+                MessageTable = new(MsgTableInfo);
 
             _ = 0;  // Breakpoint spot
 
             // If the data we're writing to the file is shorter than the existing data,
             // it could result in undesirable leftover garbage, so we outright delete the
             // file first to ensure that we start with a clean slate.
-            OutputTextInfo.Delete();   
+            // But first, warn the user that we're about to do so, in case they want to back out.
+            if (OutputTextInfo.Exists)
+            {
+                char check = ' ';
+                while (check != 'y' && check != 'n')
+                {
+                    Console.Write($"The output file \"{OutputTextInfo.FullName}\" already exists, and will be overwritten!\nAre you sure you want to continue? (Y/N): ");
+                    string? check2 = Console.ReadLine()?.ToLowerInvariant();
+                    if (!string.IsNullOrEmpty(check2))
+                    {
+                        check = check2[0];
+                    }
+
+                    if (check == 'n') return;
+                }
+                OutputTextInfo.Delete();
+            }
             
             // Output each segment of the input table
             using FileStream outputStream = OutputTextInfo.OpenWrite();
@@ -183,6 +174,7 @@ namespace P3TableExporter
                 {
                     // Most tables' output functions are not implemented yet, so this
                     // catch block lets us at least test the ones I have implemented.
+                    _ = 0;  // Breakpoint spot
                 }
 
                 // Append a final newline, then proceed to the next segment.
@@ -198,6 +190,7 @@ namespace P3TableExporter
             // When our output is totally built, write it to the output CSV file.
             outputWriter.Write(outputBuilder.ToString());
             outputWriter.Flush();
+            outputWriter.Close();
         }
     }
 }
